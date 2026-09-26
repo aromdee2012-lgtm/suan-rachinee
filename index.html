@@ -294,9 +294,23 @@
   </div>
 
   <script>
-    let products = JSON.parse(localStorage.getItem('sk_products')) || [
-      { id: 1, name: 'ผลไม้สดตามฤดูกาล', price: 150, shippingFee: 50, image: 'https://images.unsplash.com/photo-1610832958506-aa56368176cf?w=500' }
-    ];
+    let products = [];
+    
+    async function loadProductsFromCloud() {
+      try {
+        const response = await fetch('products.json?t=' + Date.now());
+        if (response.ok) {
+          products = await response.json();
+          renderProducts();
+        } else {
+          console.log('ยังไม่พบไฟล์ products.json ใช้ค่าสำรอง');
+        }
+      } catch (err) {
+        console.error('โหลดข้อมูลสินค้าไม่สำเร็จ:', err);
+      }
+    }
+
+    loadProductsFromCloud();
     let cart = [];
     let coupons = JSON.parse(localStorage.getItem('sk_coupons')) || [
       { id: 1, name: 'ส่วนลดมาตรฐาน 20 บาท', discount: 20, type: 'discount' }
