@@ -23,12 +23,13 @@
                 </div>
             </div>
             <div class="flex items-center space-x-2">
-                <button onclick="alert('ตะกร้าสินค้าของคุณ')" class="bg-emerald-700 hover:bg-emerald-650 text-xs px-3 py-1.5 rounded-lg flex items-center space-x-1 border border-emerald-600 transition">
+                <button onclick="openCart()" class="bg-emerald-700 hover:bg-emerald-600 text-xs px-3 py-1.5 rounded-lg flex items-center space-x-1 border border-emerald-600 transition relative">
                     <span>🛒 ตะกร้า</span>
+                    <span id="cart-badge" class="bg-red-500 text-white text-[10px] px-1.5 py-0.2 rounded-full absolute -top-1 -right-1 font-bold">0</span>
                 </button>
-                <a href="https://line.me" target="_blank" class="bg-emerald-700 hover:bg-emerald-650 text-xs px-3 py-1.5 rounded-lg flex items-center space-x-1 border border-emerald-600 transition">
-                    <span>💬 แชท</span>
-                </a>
+                <button onclick="alert('ระบบสมาชิก: ยินดีต้อนรับคุณลูกค้าทุกท่าน')" class="bg-emerald-700 hover:bg-emerald-600 text-xs px-3 py-1.5 rounded-lg border border-emerald-600 transition">
+                    👤 สมาชิก
+                </button>
                 <a href="admin.html" class="bg-amber-500 hover:bg-amber-600 text-white text-xs px-3 py-1.5 rounded-lg font-medium shadow transition">
                     🔒 หลังร้าน
                 </a>
@@ -58,14 +59,14 @@
                 <h3 class="font-bold text-amber-900 text-sm mt-1">ส่วนลดมาตรฐาน 20 บาท</h3>
                 <p class="text-xs text-gray-600">กดเก็บเพื่อใช้เป็นส่วนลดในตะกร้าสินค้า</p>
             </div>
-            <button onclick="alert('เก็บคูปองส่วนลด 20 บาทเรียบร้อยครับ!')" class="bg-amber-600 hover:bg-amber-700 text-white text-xs font-bold px-4 py-2 rounded-xl transition shadow">
+            <button onclick="applyDiscount()" id="discount-btn" class="bg-amber-600 hover:bg-amber-700 text-white text-xs font-bold px-4 py-2 rounded-xl transition shadow">
                 เก็บโค้ด
             </button>
         </div>
 
         <!-- ค้นหาสินค้า -->
         <div class="mb-6">
-            <input type="text" placeholder="🔍 ค้นหาสินค้า..." class="w-full bg-white border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-emerald-600 shadow-sm">
+            <input type="text" id="search-box" oninput="filterProducts()" placeholder="🔍 ค้นหาสินค้า..." class="w-full bg-white border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-emerald-600 shadow-sm">
         </div>
 
         <!-- รายการสินค้าทั้งหมด -->
@@ -81,45 +82,170 @@
         </div>
     </main>
 
-    <!-- Script สำหรับดึงข้อมูลสินค้าจาก products.json มาแสดงผล -->
+    <!-- Modal ตะกร้าสินค้า -->
+    <div id="cart-modal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl max-w-lg w-full p-6 shadow-xl max-h-[90vh] overflow-y-auto">
+            <div class="flex justify-between items-center mb-4 border-b pb-2">
+                <h3 class="font-bold text-lg text-emerald-900">🛒 ตะกร้าสินค้าของคุณ</h3>
+                <button onclick="closeCart()" class="text-gray-500 hover:text-gray-700 text-xl font-bold">&times;</button>
+            </div>
+            <div id="cart-items" class="space-y-3 mb-4">
+                <!-- รายการในตะกร้า -->
+            </div>
+            <div class="border-t pt-4 space-y-2 text-sm">
+                <div class="flex justify-between">
+                    <span>ยอดรวมสินค้า:</span>
+                    <span id="cart-subtotal">0 บาท</span>
+                </div>
+                <div class="flex justify-between text-amber-600">
+                    <span>ส่วนลด:</span>
+                    <span id="cart-discount">0 บาท</span>
+                </div>
+                <div class="flex justify-between font-bold text-base text-emerald-900 border-t pt-2">
+                    <span>ยอดสุทธิ:</span>
+                    <span id="cart-total">0 บาท</span>
+                </div>
+            </div>
+            <div class="mt-6 flex space-x-2">
+                <button onclick="checkout()" class="flex-1 bg-emerald-800 hover:bg-emerald-900 text-white py-2.5 rounded-xl font-medium transition shadow">
+                    🖨️ สั่งซื้อและพิมพ์บิล
+                </button>
+                <button onclick="closeCart()" class="bg-gray-200 hover:bg-gray-300 text-gray-800 px-4 py-2.5 rounded-xl font-medium transition">
+                    ปิด
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Script จัดการสินค้า ตะกร้า และพิมพ์บิล -->
     <script>
+        let allProducts = [];
+        let cart = [];
+        let hasDiscount = false;
+
         async function loadProducts() {
             try {
                 const response = await fetch('products.json?t=' + new Date().getTime());
                 if (!response.ok) throw new Error('ไม่พบข้อมูลสินค้า');
-                const products = await response.json();
-                
-                const productList = document.getElementById('product-list');
-                productList.innerHTML = '';
-
-                if (products.length === 0) {
-                    productList.innerHTML = '<p class="text-gray-500 text-sm col-span-2 text-center py-8">ยังไม่มีสินค้าในระบบ</p>';
-                    return;
-                }
-
-                products.forEach(product => {
-                    const card = document.createElement('div');
-                    card.className = 'bg-white border border-gray-200 rounded-2xl overflow-hidden shadow-sm flex flex-col justify-between hover:shadow-md transition';
-                    card.innerHTML = `
-                        <div>
-                            <img src="${product.image || 'https://via.placeholder.com/300'}" alt="${product.name}" class="w-full h-48 object-cover bg-gray-100">
-                            <div class="p-4">
-                                <h4 class="font-semibold text-gray-800 text-sm mb-1 line-clamp-2">${product.name}</h4>
-                                <p class="text-emerald-700 font-bold text-base">${product.price} บาท</p>
-                            </div>
-                        </div>
-                        <div class="p-4 pt-0">
-                            <button onclick="alert('เพิ่มสินค้าลงตะกร้า: ${product.name}')" class="w-full bg-emerald-800 hover:bg-emerald-900 text-white text-xs py-2 rounded-xl font-medium transition shadow-sm">
-                                เพิ่มลงตะกร้า
-                            </button>
-                        </div>
-                    `;
-                    productList.appendChild(card);
-                });
+                allProducts = await response.json();
+                displayProducts(allProducts);
             } catch (error) {
                 console.error(error);
                 document.getElementById('product-list').innerHTML = '<p class="text-red-500 text-sm col-span-2 text-center py-8">ไม่สามารถโหลดรายการสินค้าได้ในขณะนี้</p>';
             }
+        }
+
+        function displayProducts(products) {
+            const productList = document.getElementById('product-list');
+            productList.innerHTML = '';
+
+            if (products.length === 0) {
+                productList.innerHTML = '<p class="text-gray-500 text-sm col-span-2 text-center py-8">ยังไม่มีสินค้าในระบบ</p>';
+                return;
+            }
+
+            products.forEach(product => {
+                const card = document.createElement('div');
+                card.className = 'bg-white border border-gray-200 rounded-2xl overflow-hidden shadow-sm flex flex-col justify-between hover:shadow-md transition';
+                card.innerHTML = `
+                    <div>
+                        <img src="${product.image || 'https://via.placeholder.com/300'}" alt="${product.name}" class="w-full h-48 object-cover bg-gray-100">
+                        <div class="p-4">
+                            <h4 class="font-semibold text-gray-800 text-sm mb-1 line-clamp-2">${product.name}</h4>
+                            <p class="text-emerald-700 font-bold text-base">${product.price} บาท</p>
+                        </div>
+                    </div>
+                    <div class="p-4 pt-0">
+                        <button onclick='addToCart(${JSON.stringify(product)})' class="w-full bg-emerald-800 hover:bg-emerald-900 text-white text-xs py-2 rounded-xl font-medium transition shadow-sm">
+                            เพิ่มลงตะกร้า
+                        </button>
+                    </div>
+                `;
+                productList.appendChild(card);
+            });
+        }
+
+        function filterProducts() {
+            const keyword = document.getElementById('search-box').value.toLowerCase();
+            const filtered = allProducts.filter(p => p.name.toLowerCase().includes(keyword));
+            displayProducts(filtered);
+        }
+
+        function addToCart(product) {
+            const found = cart.find(item => item.name === product.name);
+            if (found) {
+                found.qty += 1;
+            } else {
+                cart.push({ ...product, qty: 1 });
+            }
+            updateCartBadge();
+            alert('เพิ่ม ' + product.name + ' ลงในตะกร้าแล้วครับ');
+        }
+
+        function updateCartBadge() {
+            const totalQty = cart.reduce((sum, item) => sum + item.qty, 0);
+            document.getElementById('cart-badge').innerText = totalQty;
+        }
+
+        function openCart() {
+            const cartModal = document.getElementById('cart-modal');
+            const cartItems = document.getElementById('cart-items');
+            cartItems.innerHTML = '';
+
+            if (cart.length === 0) {
+                cartItems.innerHTML = '<p class="text-gray-500 text-center py-4">ตะกร้าสินค้าว่างเปล่า</p>';
+            } else {
+                cart.forEach((item, index) => {
+                    cartItems.innerHTML += `
+                        <div class="flex justify-between items-center bg-gray-50 p-3 rounded-xl border">
+                            <div>
+                                <h4 class="font-semibold text-sm">${item.name}</h4>
+                                <p class="text-xs text-gray-600">${item.price} บาท x ${item.qty}</p>
+                            </div>
+                            <button onclick="removeItem(${index})" class="text-red-500 text-xs font-bold hover:underline">ลบ</button>
+                        </div>
+                    `;
+                });
+            }
+
+            let subtotal = cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
+            let discount = hasDiscount && subtotal > 0 ? 20 : 0;
+            let total = subtotal - discount;
+
+            document.getElementById('cart-subtotal').innerText = subtotal + ' บาท';
+            document.getElementById('cart-discount').innerText = discount + ' บาท';
+            document.getElementById('cart-total').innerText = total + ' บาท';
+
+            cartModal.classList.remove('hidden');
+        }
+
+        function closeCart() {
+            document.getElementById('cart-modal').classList.add('hidden');
+        }
+
+        function removeItem(index) {
+            cart.splice(index, 1);
+            updateCartBadge();
+            openCart();
+        }
+
+        function applyDiscount() {
+            hasDiscount = true;
+            document.getElementById('discount-btn').innerText = 'ใช้งานแล้ว ✓';
+            document.getElementById('discount-btn').disabled = true;
+            document.getElementById('discount-btn').classList.add('bg-emerald-600');
+            alert('เก็บคูปองส่วนลด 20 บาทเรียบร้อยครับ!');
+        }
+
+        function checkout() {
+            if (cart.length === 0) {
+                alert('กรุณาเลือกสินค้าใส่ตะกร้าก่อนสั่งซื้อครับ');
+                return;
+            }
+            alert('สั่งซื้อสินค้าเรียบร้อย กำลังสร้างใบเสร็จพิมพ์บิล...');
+            closeCart();
+            cart = [];
+            updateCartBadge();
         }
 
         loadProducts();
