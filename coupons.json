@@ -1,0 +1,4 @@
+[
+  { "id": 1, "name": "ส่วนลดมาตรฐาน 20 บาท", "discount": 20, "type": "discount" },
+  { "id": 2, "name": "ส่งฟรี", "discount": 30, "type": "shipping" }
+]
