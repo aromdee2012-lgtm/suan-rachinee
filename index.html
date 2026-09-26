@@ -312,9 +312,27 @@
 
     loadProductsFromCloud();
     let cart = [];
-    let coupons = JSON.parse(localStorage.getItem('sk_coupons')) || [
+   let coupons = [
       { id: 1, name: 'ส่วนลดมาตรฐาน 20 บาท', discount: 20, type: 'discount' }
     ];
+
+    async function loadCouponsFromCloud() {
+      try {
+        const response = await fetch('coupons.json?t=' + Date.now());
+        if (response.ok) {
+          coupons = await response.json();
+          if (typeof renderCoupons === 'function') {
+            renderCoupons();
+          }
+        } else {
+          console.log('ยังไม่พบไฟล์ coupons.json ใช้ค่าสำรอง');
+        }
+      } catch (err) {
+        console.error('โหลดคูปองไม่สำเร็จ:', err);
+      }
+    }
+
+    loadCouponsFromCloud();
     let collectedCoupons = JSON.parse(localStorage.getItem('sk_collected')) || ['ส่วนลดมาตรฐาน 20 บาท'];
     let orders = JSON.parse(localStorage.getItem('sk_orders')) || [];
     let chatMessages = JSON.parse(localStorage.getItem('sk_chats')) || [
