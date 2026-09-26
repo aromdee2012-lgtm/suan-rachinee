@@ -321,8 +321,8 @@
         const response = await fetch('coupons.json?t=' + Date.now());
         if (response.ok) {
           coupons = await response.json();
-          if (typeof renderCoupons === 'function') {
-            renderCoupons();
+          if (typeof renderCustomerCoupons === 'function') {
+            renderCustomerCoupons();
           }
         } else {
           console.log('ยังไม่พบไฟล์ coupons.json ใช้ค่าสำรอง');
