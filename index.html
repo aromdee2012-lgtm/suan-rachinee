@@ -23,6 +23,9 @@
                 </div>
             </div>
             <div class="flex items-center space-x-2">
+                <button onclick="alert('ตะกร้าสินค้าของคุณ')" class="bg-emerald-700 hover:bg-emerald-650 text-xs px-3 py-1.5 rounded-lg flex items-center space-x-1 border border-emerald-600 transition">
+                    <span>🛒 ตะกร้า</span>
+                </button>
                 <a href="https://line.me" target="_blank" class="bg-emerald-700 hover:bg-emerald-650 text-xs px-3 py-1.5 rounded-lg flex items-center space-x-1 border border-emerald-600 transition">
                     <span>💬 แชท</span>
                 </a>
@@ -48,6 +51,23 @@
             </div>
         </div>
 
+        <!-- คูปองส่วนลด -->
+        <div class="bg-amber-50 border border-amber-200 rounded-2xl p-4 mb-6 shadow-sm flex justify-between items-center">
+            <div>
+                <span class="bg-amber-600 text-white text-xs px-2 py-0.5 rounded-full font-medium">คูปองส่วนลด</span>
+                <h3 class="font-bold text-amber-900 text-sm mt-1">ส่วนลดมาตรฐาน 20 บาท</h3>
+                <p class="text-xs text-gray-600">กดเก็บเพื่อใช้เป็นส่วนลดในตะกร้าสินค้า</p>
+            </div>
+            <button onclick="alert('เก็บคูปองส่วนลด 20 บาทเรียบร้อยครับ!')" class="bg-amber-600 hover:bg-amber-700 text-white text-xs font-bold px-4 py-2 rounded-xl transition shadow">
+                เก็บโค้ด
+            </button>
+        </div>
+
+        <!-- ค้นหาสินค้า -->
+        <div class="mb-6">
+            <input type="text" placeholder="🔍 ค้นหาสินค้า..." class="w-full bg-white border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-emerald-600 shadow-sm">
+        </div>
+
         <!-- รายการสินค้าทั้งหมด -->
         <div class="mb-4">
             <h3 class="font-bold text-gray-800 text-base flex items-center space-x-2">
@@ -57,7 +77,6 @@
 
         <!-- กล่องแสดงรายการสินค้า (ดึงข้อมูลจาก products.json อัตโนมัติ) -->
         <div id="product-list" class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <!-- สินค้าจะถูกโหลดมาแสดงที่นี่โดยอัตโนมัติ -->
             <p class="text-gray-500 text-sm col-span-2 text-center py-8">กำลังโหลดสินค้า...</p>
         </div>
     </main>
@@ -90,7 +109,7 @@
                             </div>
                         </div>
                         <div class="p-4 pt-0">
-                            <button onclick="alert('สั่งซื้อสินค้า: ${product.name}')" class="w-full bg-emerald-800 hover:bg-emerald-900 text-white text-xs py-2 rounded-xl font-medium transition shadow-sm">
+                            <button onclick="alert('เพิ่มสินค้าลงตะกร้า: ${product.name}')" class="w-full bg-emerald-800 hover:bg-emerald-900 text-white text-xs py-2 rounded-xl font-medium transition shadow-sm">
                                 เพิ่มลงตะกร้า
                             </button>
                         </div>
