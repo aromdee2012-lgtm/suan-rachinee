@@ -67,11 +67,11 @@
     </main>
 
     <script>
-        // ตั้งค่า GitHub ภายในตัว (ไม่ต้องกรอกหน้าจออีกต่อไป)
+        // ตั้งค่า GitHub ภายในตัว
         const CONFIG = {
             username: "aromdee2012-lgtm",
-            repo: "aromdee2012-lgtm.github.io", // ชื่อ Repository ของพี่ (ถ้าไม่ใช่ แก้ไขตรงนี้ได้ครับ)
-            token: "ghp_YOUR_TOKEN_HERE" // วาง GitHub Token ของพี่ไว้ตรงนี้ (ระหว่างเครื่องหมายคำพูด)
+            repo: "aromdee2012-lgtm.github.io",
+            token: "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"
         };
 
         let products = [];
@@ -178,11 +178,6 @@
             const token = CONFIG.token;
             const user = CONFIG.username;
             const repo = CONFIG.repo;
-
-            if (!token || token === "ghp_YOUR_TOKEN_HERE") {
-                alert('กรุณาใส่ GitHub Token ในโค้ดบรรทัด CONFIG ก่อนใช้งานครับพี่');
-                return;
-            }
 
             const btn = document.getElementById('saveBtn');
             const originalText = btn.innerText;
