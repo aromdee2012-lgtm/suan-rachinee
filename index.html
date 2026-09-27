@@ -80,40 +80,66 @@
             </div>
         </div>
 
-        <!-- Section: Contact -->
-        <div id="section-contact" class="hidden space-y-4">
+        <!-- Section: Tracking (สถานะพัสดุ) -->
+        <div id="section-tracking" class="hidden space-y-4">
             <div class="bg-white border border-gray-200 p-5 rounded-2xl shadow-xs space-y-3">
-                <h3 class="text-sm font-bold text-gray-800">📞 ช่องทางการติดต่อ</h3>
+                <h3 class="text-sm font-bold text-gray-800">🚚 ตรวจสอบสถานะพัสดุ</h3>
+                <p class="text-xs text-gray-600">กรอกเลขพัสดุหรือสอบถามสถานะการจัดส่งได้โดยตรงกับลุงแจ่ม</p>
+                <a href="https://line.me/R/ti/p/~0809898770" target="_blank" class="inline-block bg-emerald-700 text-white text-xs px-4 py-2 rounded-xl font-bold shadow">💬 สอบถามสถานะพัสดุทาง Line</a>
+            </div>
+        </div>
+
+        <!-- Section: Chat (แชท) -->
+        <div id="section-chat" class="hidden space-y-4">
+            <div class="bg-white border border-gray-200 p-5 rounded-2xl shadow-xs space-y-3">
+                <h3 class="text-sm font-bold text-gray-800">💬 แชท / ติดต่อเรา</h3>
                 <p class="text-xs text-gray-600">สวนราชินี กำแพงเพชร (ลุงแจ่ม อารมณ์ดี)</p>
                 <p class="text-xs text-gray-600">📍 ที่อยู่: 190/2 หมู่ 9 ต.เทพนคร อ.เมือง จ.กำแพงเพชร</p>
                 <p class="text-xs text-gray-600">☎️ เบอร์โทรศัพท์: 0809898770</p>
+                <a href="https://line.me/R/ti/p/~0809898770" target="_blank" class="inline-block bg-emerald-700 text-white text-xs px-4 py-2 rounded-xl font-bold shadow">💬 ทักแชท Line ลุงแจ่ม</a>
+            </div>
+        </div>
+
+        <!-- Section: Member (สมาชิก) -->
+        <div id="section-member" class="hidden space-y-4">
+            <div class="bg-white border border-gray-200 p-5 rounded-2xl shadow-xs space-y-3">
+                <h3 class="text-sm font-bold text-gray-800">👤 บัญชีสมาชิกสวนราชินี</h3>
+                <p class="text-xs text-gray-600">ยินดีต้อนรับสมาชิกทุกท่าน สั่งซื้อสินค้าสะสมแต้มและรับสิทธิ ฯลฯ</p>
+                <div class="bg-emerald-50 p-3 rounded-xl border border-emerald-200">
+                    <p class="text-xs font-bold text-emerald-900">สถานะ: ลูกค้าทั่วไป / สมาชิกสวนราชินี</p>
+                </div>
             </div>
         </div>
     </main>
 
-    <!-- Bottom Navigation (5 Buttons) -->
+    <!-- Bottom Navigation (5 Buttons ตรงตามต้นฉบับ) -->
     <nav class="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 py-2 px-4 shadow-lg z-50">
         <div class="max-w-md mx-auto grid grid-cols-5 gap-1 text-center">
+            <!-- 1. หน้าแรก -->
             <button onclick="switchTab('home')" id="nav-home" class="flex flex-col items-center justify-center text-emerald-700 py-1 cursor-pointer">
                 <span class="text-lg">🏠</span>
                 <span class="text-[10px] font-bold">หน้าแรก</span>
             </button>
-            <button onclick="switchTab('products')" id="nav-products" class="flex flex-col items-center justify-center text-gray-400 py-1 cursor-pointer">
-                <span class="text-lg">📦</span>
-                <span class="text-[10px] font-medium">สินค้า</span>
-            </button>
+            <!-- 2. ตะกร้า -->
             <button onclick="switchTab('cart')" id="nav-cart" class="flex flex-col items-center justify-center text-gray-400 py-1 relative cursor-pointer">
                 <span class="text-lg">🛒</span>
                 <span class="text-[10px] font-medium">ตะกร้า</span>
                 <span id="cartBadge" class="absolute top-0 right-3 bg-red-500 text-white text-[9px] w-4 h-4 rounded-full flex items-center justify-center font-bold hidden">0</span>
             </button>
-            <button onclick="switchTab('coupons')" id="nav-coupons" class="flex flex-col items-center justify-center text-gray-400 py-1 cursor-pointer">
-                <span class="text-lg">🎟️</span>
-                <span class="text-[10px] font-medium">คูปอง</span>
+            <!-- 3. สถานะพัสดุ -->
+            <button onclick="switchTab('tracking')" id="nav-tracking" class="flex flex-col items-center justify-center text-gray-400 py-1 cursor-pointer">
+                <span class="text-lg">🚚</span>
+                <span class="text-[10px] font-medium">สถานะพัสดุ</span>
             </button>
-            <button onclick="switchTab('contact')" id="nav-contact" class="flex flex-col items-center justify-center text-gray-400 py-1 cursor-pointer">
-                <span class="text-lg">📞</span>
-                <span class="text-[10px] font-medium">ติดต่อ</span>
+            <!-- 4. แชท -->
+            <button onclick="switchTab('chat')" id="nav-chat" class="flex flex-col items-center justify-center text-gray-400 py-1 cursor-pointer">
+                <span class="text-lg">💬</span>
+                <span class="text-[10px] font-medium">แชท</span>
+            </button>
+            <!-- 5. สมาชิก -->
+            <button onclick="switchTab('member')" id="nav-member" class="flex flex-col items-center justify-center text-gray-400 py-1 cursor-pointer">
+                <span class="text-lg">👤</span>
+                <span class="text-[10px] font-medium">สมาชิก</span>
             </button>
         </div>
     </nav>
@@ -234,9 +260,9 @@
                         <p class="text-xs text-amber-700 font-semibold">${item.price} บาท x ${item.qty}</p>
                     </div>
                     <div class="flex items-center gap-2">
-                        <button onclick="changeQty(${idx}, 1)" class="bg-gray-200 px-2 py-0.5 rounded text-xs font-bold">+</button>
+                        <button onclick="changeQty(${idx}, 1)" class="bg-gray-200 px-2 py-0.5 rounded text-xs font-bold cursor-pointer">+</button>
                         <span class="text-xs font-bold">${item.qty}</span>
-                        <button onclick="changeQty(${idx}, -1)" class="bg-gray-200 px-2 py-0.5 rounded text-xs font-bold">-</button>
+                        <button onclick="changeQty(${idx}, -1)" class="bg-gray-200 px-2 py-0.5 rounded text-xs font-bold cursor-pointer">-</button>
                     </div>
                 </div>
             `).join('');
@@ -260,19 +286,19 @@
         }
 
         function switchTab(tab) {
-            ['home', 'cart', 'contact'].forEach(t => {
-                document.getElementById(`section-${t}`).classList.add('hidden');
-                document.getElementById(`nav-${t}`).className = "flex flex-col items-center justify-center text-gray-400 py-1 cursor-pointer";
+            const tabs = ['home', 'cart', 'tracking', 'chat', 'member'];
+            tabs.forEach(t => {
+                const section = document.getElementById(`section-${t}`);
+                const navBtn = document.getElementById(`nav-${t}`);
+                if (section) section.classList.add('hidden');
+                if (navBtn) navBtn.className = "flex flex-col items-center justify-center text-gray-400 py-1 cursor-pointer";
             });
-            document.getElementById('nav-products').className = "flex flex-col items-center justify-center text-gray-400 py-1 cursor-pointer";
 
-            if (tab === 'home' || tab === 'products') {
-                document.getElementById('section-home').classList.remove('hidden');
-                document.getElementById(`nav-${tab}`).className = "flex flex-col items-center justify-center text-emerald-700 py-1 cursor-pointer";
-            } else {
-                document.getElementById(`section-${tab}`).classList.remove('hidden');
-                document.getElementById(`nav-${tab}`).className = "flex flex-col items-center justify-center text-emerald-700 py-1 cursor-pointer";
-            }
+            const activeSection = document.getElementById(`section-${tab}`);
+            const activeNav = document.getElementById(`nav-${tab}`);
+            if (activeSection) activeSection.classList.remove('hidden');
+            if (activeNav) activeNav.className = "flex flex-col items-center justify-center text-emerald-700 py-1 cursor-pointer";
+
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
