@@ -18,7 +18,7 @@
                 <h1 class="text-lg font-bold">🍵 สวนราชินี กำแพงเพชร</h1>
                 <p class="text-xs text-emerald-200">โทร. 0809898770</p>
             </div>
-            <div>
+            <div class="flex items-center gap-2">
                 <a href="admin.html" class="bg-amber-600 hover:bg-amber-700 text-white text-xs px-3 py-1.5 rounded-lg font-medium transition-colors shadow">🔒 หลังร้าน</a>
             </div>
         </div>
@@ -38,35 +38,104 @@
             </div>
         </div>
 
-        <!-- Coupons Section -->
-        <div>
-            <h3 class="text-sm font-bold text-gray-700 mb-3">🎟️ คูปองส่วนลดในระบบ</h3>
-            <div id="couponList" class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                <p class="text-gray-400 text-xs">กำลังโหลดคูปอง...</p>
+        <!-- Section: Home / Products -->
+        <div id="section-home" class="space-y-6">
+            <!-- Coupons Section -->
+            <div>
+                <h3 class="text-sm font-bold text-gray-700 mb-3">🎟️ คูปองส่วนลดในระบบ</h3>
+                <div id="couponList" class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <p class="text-gray-400 text-xs">กำลังโหลดคูปอง...</p>
+                </div>
+            </div>
+
+            <!-- Product List Section -->
+            <div>
+                <h3 class="text-sm font-bold text-gray-700 mb-3">📦 รายการสินค้าทั้งหมด</h3>
+                <div id="productList" class="grid grid-cols-2 sm:grid-cols-3 gap-4">
+                    <p class="text-gray-400 text-xs col-span-full">กำลังโหลดสินค้า...</p>
+                </div>
             </div>
         </div>
 
-        <!-- Product List Section -->
-        <div>
-            <h3 class="text-sm font-bold text-gray-700 mb-3">📦 รายการสินค้าทั้งหมด</h3>
-            <div id="productList" class="grid grid-cols-2 sm:grid-cols-3 gap-4">
-                <p class="text-gray-400 text-xs">กำลังโหลดสินค้า...</p>
+        <!-- Section: Cart -->
+        <div id="section-cart" class="hidden space-y-4">
+            <h3 class="text-sm font-bold text-gray-700">🛒 ตะกร้าสินค้าของคุณ</h3>
+            <div id="cartList" class="space-y-2">
+                <p class="text-gray-400 text-xs bg-white p-4 rounded-xl border border-gray-200">ไม่มีสินค้าในตะกร้า</p>
+            </div>
+            <div id="cartSummary" class="bg-white border border-gray-200 p-4 rounded-xl space-y-2 hidden">
+                <div class="flex justify-between text-xs text-gray-600">
+                    <span>ราคาสินค้าทั้งหมด:</span>
+                    <span id="cartSubtotal">0 บาท</span>
+                </div>
+                <div class="flex justify-between text-xs text-gray-600">
+                    <span>ค่าขนส่งรวม:</span>
+                    <span id="cartShippingTotal">0 บาท</span>
+                </div>
+                <div class="flex justify-between text-sm font-bold text-emerald-900 border-t pt-2">
+                    <span>ยอดสุทธิ:</span>
+                    <span id="cartGrandTotal">0 บาท</span>
+                </div>
+                <button onclick="checkout()" class="w-full bg-emerald-700 hover:bg-emerald-800 text-white text-xs py-2.5 rounded-xl font-bold transition-colors shadow mt-2 cursor-pointer">📲 สั่งซื้อสินค้าผ่าน Line</button>
+            </div>
+        </div>
+
+        <!-- Section: Contact -->
+        <div id="section-contact" class="hidden space-y-4">
+            <div class="bg-white border border-gray-200 p-5 rounded-2xl shadow-xs space-y-3">
+                <h3 class="text-sm font-bold text-gray-800">📞 ช่องทางการติดต่อ</h3>
+                <p class="text-xs text-gray-600">สวนราชินี กำแพงเพชร (ลุงแจ่ม อารมณ์ดี)</p>
+                <p class="text-xs text-gray-600">📍 ที่อยู่: 190/2 หมู่ 9 ต.เทพนคร อ.เมือง จ.กำแพงเพชร</p>
+                <p class="text-xs text-gray-600">☎️ เบอร์โทรศัพท์: 0809898770</p>
             </div>
         </div>
     </main>
 
+    <!-- Bottom Navigation (5 Buttons) -->
+    <nav class="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 py-2 px-4 shadow-lg z-50">
+        <div class="max-w-md mx-auto grid grid-cols-5 gap-1 text-center">
+            <button onclick="switchTab('home')" id="nav-home" class="flex flex-col items-center justify-center text-emerald-700 py-1 cursor-pointer">
+                <span class="text-lg">🏠</span>
+                <span class="text-[10px] font-bold">หน้าแรก</span>
+            </button>
+            <button onclick="switchTab('products')" id="nav-products" class="flex flex-col items-center justify-center text-gray-400 py-1 cursor-pointer">
+                <span class="text-lg">📦</span>
+                <span class="text-[10px] font-medium">สินค้า</span>
+            </button>
+            <button onclick="switchTab('cart')" id="nav-cart" class="flex flex-col items-center justify-center text-gray-400 py-1 relative cursor-pointer">
+                <span class="text-lg">🛒</span>
+                <span class="text-[10px] font-medium">ตะกร้า</span>
+                <span id="cartBadge" class="absolute top-0 right-3 bg-red-500 text-white text-[9px] w-4 h-4 rounded-full flex items-center justify-center font-bold hidden">0</span>
+            </button>
+            <button onclick="switchTab('coupons')" id="nav-coupons" class="flex flex-col items-center justify-center text-gray-400 py-1 cursor-pointer">
+                <span class="text-lg">🎟️</span>
+                <span class="text-[10px] font-medium">คูปอง</span>
+            </button>
+            <button onclick="switchTab('contact')" id="nav-contact" class="flex flex-col items-center justify-center text-gray-400 py-1 cursor-pointer">
+                <span class="text-lg">📞</span>
+                <span class="text-[10px] font-medium">ติดต่อ</span>
+            </button>
+        </div>
+    </nav>
+
     <script>
-        // ใช้ Raw URL ของ GitHub ตรงๆ เพื่อดึงข้อมูลล่าสุดแบบเรียลไทม์และไม่ติดแคช
+        let allProducts = [];
+        let allCoupons = [];
+        let cart = [];
+
         const PRODUCTS_URL = `products.json?t=${Date.now()}`;
         const COUPONS_URL = `coupons.json?t=${Date.now()}`;
 
+        window.addEventListener('DOMContentLoaded', () => {
+            loadShopData();
+        });
+
         async function loadShopData() {
-            // โหลดสินค้า
             try {
                 const prodRes = await fetch(PRODUCTS_URL, { cache: "no-store" });
                 if (prodRes.ok) {
-                    const products = await prodRes.json();
-                    renderProducts(products);
+                    allProducts = await prodRes.json();
+                    renderProducts(allProducts);
                 } else {
                     document.getElementById('productList').innerHTML = '<p class="text-gray-400 text-xs col-span-full">ยังไม่มีสินค้าในระบบ</p>';
                 }
@@ -74,12 +143,11 @@
                 document.getElementById('productList').innerHTML = '<p class="text-red-500 text-xs col-span-full">ไม่สามารถโหลดสินค้าได้</p>';
             }
 
-            // โหลดคูปอง
             try {
                 const couponRes = await fetch(COUPONS_URL, { cache: "no-store" });
                 if (couponRes.ok) {
-                    const coupons = await couponRes.json();
-                    renderCoupons(coupons);
+                    allCoupons = await couponRes.json();
+                    renderCoupons(allCoupons);
                 } else {
                     document.getElementById('couponList').innerHTML = '<p class="text-gray-400 text-xs">ยังไม่มีคูปอง</p>';
                 }
@@ -94,15 +162,16 @@
                 listDiv.innerHTML = '<p class="text-gray-400 text-xs col-span-full">ยังไม่มีสินค้าในระบบ</p>';
                 return;
             }
-            listDiv.innerHTML = products.map(p => `
+            listDiv.innerHTML = products.map((p, index) => `
                 <div class="bg-white border border-gray-200 rounded-xl overflow-hidden shadow-xs flex flex-col justify-between">
-                    <img src="${p.image}" alt="${p.name}" class="w-full h-36 object-cover bg-gray-100" onerror="this.src='https://placehold.co/300?text=No+Image'">
+                    <img src="${p.image}" alt="${p.name}" class="w-full h-32 object-cover bg-gray-100" onerror="this.src='https://placehold.co/300?text=No+Image'">
                     <div class="p-3 flex flex-col flex-grow justify-between">
                         <div>
                             <h4 class="text-xs font-bold text-gray-800 line-clamp-2">${p.name}</h4>
                             <p class="text-sm font-bold text-amber-700 mt-1">${p.price} บาท</p>
+                            <p class="text-[10px] text-gray-500">ค่าส่ง: ${p.shipping || 0} บาท</p>
                         </div>
-                        <button onclick="alert('เพิ่ม ${p.name} ลงตะกร้าแล้ว')" class="mt-3 w-full bg-emerald-700 hover:bg-emerald-800 text-white text-xs py-1.5 rounded-lg font-medium transition-colors cursor-pointer">เพิ่มลงตะกร้า</button>
+                        <button onclick="addToCart(${index})" class="mt-3 w-full bg-emerald-700 hover:bg-emerald-800 text-white text-xs py-1.5 rounded-lg font-medium transition-colors cursor-pointer">เพิ่มลงตะกร้า</button>
                     </div>
                 </div>
             `).join('');
@@ -117,7 +186,7 @@
             listDiv.innerHTML = coupons.map(c => `
                 <div class="bg-yellow-50 border border-yellow-200 p-3 rounded-xl flex justify-between items-center shadow-xs">
                     <div>
-                        <span class="text-[9px] bg-amber-600 text-white px-2 py-0.5 rounded-full font-semibold">${c.type === 'freeshipping' ? 'โค้ดส่งฟรี' : 'ส่วนลด'}</span>
+                        <span class="text-[9px] bg-amber-600 text-white px-2 py-0.5 rounded-full font-semibold">ส่วนลด</span>
                         <h4 class="text-xs font-bold text-gray-800 mt-1">${c.name}</h4>
                         <p class="text-xs text-amber-700 font-semibold">มูลค่า: ${c.discount} บาท</p>
                     </div>
@@ -126,7 +195,99 @@
             `).join('');
         }
 
-        loadShopData();
+        function addToCart(index) {
+            const product = allProducts[index];
+            const existing = cart.find(item => item.name === product.name);
+            if (existing) {
+                existing.qty += 1;
+            } else {
+                cart.push({ ...product, qty: 1 });
+            }
+            updateCartUI();
+            alert(`เพิ่ม "${product.name}" ลงตะกร้าแล้ว!`);
+        }
+
+        function updateCartUI() {
+            const badge = document.getElementById('cartBadge');
+            const totalQty = cart.reduce((sum, item) => sum + item.qty, 0);
+            
+            if (totalQty > 0) {
+                badge.innerText = totalQty;
+                badge.classList.remove('hidden');
+            } else {
+                badge.classList.add('hidden');
+            }
+
+            const cartList = document.getElementById('cartList');
+            const cartSummary = document.getElementById('cartSummary');
+
+            if (cart.length === 0) {
+                cartList.innerHTML = '<p class="text-gray-400 text-xs bg-white p-4 rounded-xl border border-gray-200">ไม่มีสินค้าในตะกร้า</p>';
+                cartSummary.classList.add('hidden');
+                return;
+            }
+
+            cartList.innerHTML = cart.map((item, idx) => `
+                <div class="bg-white border border-gray-200 p-3 rounded-xl flex justify-between items-center shadow-xs">
+                    <div>
+                        <h4 class="text-xs font-bold text-gray-800">${item.name}</h4>
+                        <p class="text-xs text-amber-700 font-semibold">${item.price} บาท x ${item.qty}</p>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <button onclick="changeQty(${idx}, 1)" class="bg-gray-200 px-2 py-0.5 rounded text-xs font-bold">+</button>
+                        <span class="text-xs font-bold">${item.qty}</span>
+                        <button onclick="changeQty(${idx}, -1)" class="bg-gray-200 px-2 py-0.5 rounded text-xs font-bold">-</button>
+                    </div>
+                </div>
+            `).join('');
+
+            let subtotal = cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
+            let shippingTotal = cart.reduce((sum, item) => sum + ((item.shipping || 0) * item.qty), 0);
+            let grandTotal = subtotal + shippingTotal;
+
+            document.getElementById('cartSubtotal').innerText = subtotal + ' บาท';
+            document.getElementById('cartShippingTotal').innerText = shippingTotal + ' บาท';
+            document.getElementById('cartGrandTotal').innerText = grandTotal + ' บาท';
+            cartSummary.classList.remove('hidden');
+        }
+
+        function changeQty(idx, amount) {
+            cart[idx].qty += amount;
+            if (cart[idx].qty <= 0) {
+                cart.splice(idx, 1);
+            }
+            updateCartUI();
+        }
+
+        function switchTab(tab) {
+            ['home', 'cart', 'contact'].forEach(t => {
+                document.getElementById(`section-${t}`).classList.add('hidden');
+                document.getElementById(`nav-${t}`).className = "flex flex-col items-center justify-center text-gray-400 py-1 cursor-pointer";
+            });
+            document.getElementById('nav-products').className = "flex flex-col items-center justify-center text-gray-400 py-1 cursor-pointer";
+
+            if (tab === 'home' || tab === 'products') {
+                document.getElementById('section-home').classList.remove('hidden');
+                document.getElementById(`nav-${tab}`).className = "flex flex-col items-center justify-center text-emerald-700 py-1 cursor-pointer";
+            } else {
+                document.getElementById(`section-${tab}`).classList.remove('hidden');
+                document.getElementById(`nav-${tab}`).className = "flex flex-col items-center justify-center text-emerald-700 py-1 cursor-pointer";
+            }
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function checkout() {
+            if (cart.length === 0) return;
+            let msg = "🛒 สั่งซื้อสินค้าจาก สวนราชินี กำแพงเพชร%0A";
+            cart.forEach(item => {
+                msg += `- ${item.name} (${item.qty} ชิ้น) : ${item.price * item.qty} บาท%0A`;
+            });
+            let subtotal = cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
+            let shippingTotal = cart.reduce((sum, item) => sum + ((item.shipping || 0) * item.qty), 0);
+            msg += `ยอดรวมสินค้า: ${subtotal} บาท%0Aค่าส่ง: ${shippingTotal} บาท%0Aยอดสุทธิ: ${subtotal + shippingTotal} บาท`;
+            
+            window.open(`https://line.me/R/msg/text/?${msg}`, '_blank');
+        }
     </script>
 </body>
 </html>
