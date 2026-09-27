@@ -25,26 +25,11 @@
     </header>
 
     <main class="max-w-4xl mx-auto p-4 space-y-6">
-        <!-- GitHub Config Box -->
-        <div class="bg-white border border-gray-200 rounded-2xl p-4 shadow-xs space-y-3">
-            <h3 class="text-xs font-bold text-gray-700">⚙️ ตั้งค่าการเชื่อมต่อ GitHub (สำหรับบันทึกข้อมูลถาวร)</h3>
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                <div>
-                    <label class="block text-[11px] font-medium text-gray-600 mb-1">GitHub Token (Personal Access Token)</label>
-                    <input type="password" id="ghToken" placeholder="ghp_xxxxxxxxxxxx" class="w-full border border-gray-300 rounded-lg px-3 py-1.5 text-xs focus:ring-2 focus:ring-emerald-500 outline-none">
-                </div>
-                <div>
-                    <label class="block text-[11px] font-medium text-gray-600 mb-1">ชื่อผู้ใช้ GitHub (Username)</label>
-                    <input type="text" id="ghUser" placeholder="เช่น username" class="w-full border border-gray-300 rounded-lg px-3 py-1.5 text-xs focus:ring-2 focus:ring-emerald-500 outline-none">
-                </div>
-                <div>
-                    <label class="block text-[11px] font-medium text-gray-600 mb-1">ชื่อ Repository</label>
-                    <input type="text" id="ghRepo" placeholder="เช่น my-shop" class="w-full border border-gray-300 rounded-lg px-3 py-1.5 text-xs focus:ring-2 focus:ring-emerald-500 outline-none">
-                </div>
-                <div class="flex items-end">
-                    <button onclick="saveGitHubConfig()" class="w-full bg-gray-700 hover:bg-gray-800 text-white text-xs py-2 rounded-lg font-medium transition-colors shadow">💾 บันทึกค่าตั้งค่า GitHub</button>
-                </div>
-            </div>
+        <!-- ซ่อนกล่องตั้งค่า GitHub ไว้เบื้องหลัง (ไม่ต้องกรอกซ้ำซ้อน) -->
+        <div class="hidden">
+            <input type="password" id="ghToken" value="">
+            <input type="text" id="ghUser" value="">
+            <input type="text" id="ghRepo" value="">
         </div>
 
         <!-- Add/Edit Product Form -->
@@ -91,20 +76,13 @@
     <script>
         let products = [];
 
-        // โหลดค่าตั้งค่า GitHub จาก LocalStorage ตอนเปิดหน้าเว็บ
         window.addEventListener('DOMContentLoaded', () => {
+            // ดึงค่า Token จากความจำเครื่องอัตโนมัติ (ถ้าเคยตั้งไว้แล้ว)
             document.getElementById('ghToken').value = localStorage.getItem('gh_token') || '';
             document.getElementById('ghUser').value = localStorage.getItem('gh_user') || '';
             document.getElementById('ghRepo').value = localStorage.getItem('gh_repo') || '';
             loadProducts();
         });
-
-        function saveGitHubConfig() {
-            localStorage.setItem('gh_token', document.getElementById('ghToken').value.trim());
-            localStorage.setItem('gh_user', document.getElementById('ghUser').value.trim());
-            localStorage.setItem('gh_repo', document.getElementById('ghRepo').value.trim());
-            alert('บันทึกค่าตั้งค่า GitHub เรียบร้อยแล้ว!');
-        }
 
         async function loadProducts() {
             try {
@@ -206,7 +184,7 @@
             const repo = document.getElementById('ghRepo').value.trim();
 
             if (!token || !user || !repo) {
-                alert('กรุณากรอกข้อมูลตั้งค่า GitHub (Token, Username, Repository) ให้ครบถ้วนก่อนบันทึก!');
+                alert('ยังไม่ได้ตั้งค่าการเชื่อมต่อ GitHub ในระบบ กรุณาติดต่อผู้พัฒนาเพื่อตั้งค่าเริ่มต้นก่อนครับ');
                 return;
             }
 
@@ -220,7 +198,6 @@
             const contentEncoded = btoa(unescape(encodeURIComponent(JSON.stringify(products, null, 2))));
 
             try {
-                // เช็ค SHA เดิมของไฟล์
                 let sha = '';
                 const getRes = await fetch(apiUrl, {
                     headers: { 'Authorization': `token ${token}` }
@@ -230,7 +207,6 @@
                     sha = fileData.sha;
                 }
 
-                // ส่งข้อมูลอัปเดตขึ้น GitHub
                 const bodyData = {
                     message: "Update products.json via admin panel",
                     content: contentEncoded
