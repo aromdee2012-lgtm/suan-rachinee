@@ -25,13 +25,6 @@
     </header>
 
     <main class="max-w-4xl mx-auto p-4 space-y-6">
-        <!-- ซ่อนกล่องตั้งค่า GitHub ไว้เบื้องหลัง (ไม่ต้องกรอกซ้ำซ้อน) -->
-        <div class="hidden">
-            <input type="password" id="ghToken" value="">
-            <input type="text" id="ghUser" value="">
-            <input type="text" id="ghRepo" value="">
-        </div>
-
         <!-- Add/Edit Product Form -->
         <div class="bg-amber-50/60 border border-amber-200 rounded-2xl p-4 sm:p-6 shadow-xs space-y-4">
             <h3 id="formTitle" class="text-sm font-bold text-amber-900">➕ เพิ่มสินค้าใหม่</h3>
@@ -74,13 +67,16 @@
     </main>
 
     <script>
+        // ตั้งค่า GitHub ภายในตัว (ไม่ต้องกรอกหน้าจออีกต่อไป)
+        const CONFIG = {
+            username: "aromdee2012-lgtm",
+            repo: "aromdee2012-lgtm.github.io", // ชื่อ Repository ของพี่ (ถ้าไม่ใช่ แก้ไขตรงนี้ได้ครับ)
+            token: "ghp_YOUR_TOKEN_HERE" // วาง GitHub Token ของพี่ไว้ตรงนี้ (ระหว่างเครื่องหมายคำพูด)
+        };
+
         let products = [];
 
         window.addEventListener('DOMContentLoaded', () => {
-            // ดึงค่า Token จากความจำเครื่องอัตโนมัติ (ถ้าเคยตั้งไว้แล้ว)
-            document.getElementById('ghToken').value = localStorage.getItem('gh_token') || '';
-            document.getElementById('ghUser').value = localStorage.getItem('gh_user') || '';
-            document.getElementById('ghRepo').value = localStorage.getItem('gh_repo') || '';
             loadProducts();
         });
 
@@ -179,12 +175,12 @@
         }
 
         async function syncToGitHub() {
-            const token = document.getElementById('ghToken').value.trim();
-            const user = document.getElementById('ghUser').value.trim();
-            const repo = document.getElementById('ghRepo').value.trim();
+            const token = CONFIG.token;
+            const user = CONFIG.username;
+            const repo = CONFIG.repo;
 
-            if (!token || !user || !repo) {
-                alert('ยังไม่ได้ตั้งค่าการเชื่อมต่อ GitHub ในระบบ กรุณาติดต่อผู้พัฒนาเพื่อตั้งค่าเริ่มต้นก่อนครับ');
+            if (!token || token === "ghp_YOUR_TOKEN_HERE") {
+                alert('กรุณาใส่ GitHub Token ในโค้ดบรรทัด CONFIG ก่อนใช้งานครับพี่');
                 return;
             }
 
