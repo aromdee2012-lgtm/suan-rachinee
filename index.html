@@ -18,7 +18,7 @@
                 <h1 class="text-lg font-bold">🍵 สวนราชินี กำแพงเพชร</h1>
                 <p class="text-xs text-emerald-200">โทร. 0809898770</p>
             </div>
-            <div class="space-x-2">
+            <div>
                 <a href="admin.html" class="bg-amber-600 hover:bg-amber-700 text-white text-xs px-3 py-1.5 rounded-lg font-medium transition-colors shadow">🔒 หลังร้าน</a>
             </div>
         </div>
@@ -56,29 +56,32 @@
     </main>
 
     <script>
-        const REPO_OWNER = "aromdee2012-lgtm";
-        const REPO_NAME = "suan-rachinee";
+        // ใช้ Raw URL ของ GitHub ตรงๆ เพื่อดึงข้อมูลล่าสุดแบบเรียลไทม์และไม่ติดแคช
+        const PRODUCTS_URL = `products.json?t=${Date.now()}`;
+        const COUPONS_URL = `coupons.json?t=${Date.now()}`;
 
         async function loadShopData() {
             // โหลดสินค้า
             try {
-                const prodRes = await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/products.json?t=${Date.now()}`, { cache: "no-store" });
+                const prodRes = await fetch(PRODUCTS_URL, { cache: "no-store" });
                 if (prodRes.ok) {
-                    const data = await prodRes.json();
-                    const products = JSON.parse(decodeURIComponent(escape(atob(data.content))));
+                    const products = await prodRes.json();
                     renderProducts(products);
+                } else {
+                    document.getElementById('productList').innerHTML = '<p class="text-gray-400 text-xs col-span-full">ยังไม่มีสินค้าในระบบ</p>';
                 }
             } catch (err) {
-                document.getElementById('productList').innerHTML = '<p class="text-red-500 text-xs">ไม่สามารถโหลดสินค้าได้</p>';
+                document.getElementById('productList').innerHTML = '<p class="text-red-500 text-xs col-span-full">ไม่สามารถโหลดสินค้าได้</p>';
             }
 
             // โหลดคูปอง
             try {
-                const couponRes = await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/coupons.json?t=${Date.now()}`, { cache: "no-store" });
+                const couponRes = await fetch(COUPONS_URL, { cache: "no-store" });
                 if (couponRes.ok) {
-                    const data = await couponRes.json();
-                    const coupons = JSON.parse(decodeURIComponent(escape(atob(data.content))));
+                    const coupons = await couponRes.json();
                     renderCoupons(coupons);
+                } else {
+                    document.getElementById('couponList').innerHTML = '<p class="text-gray-400 text-xs">ยังไม่มีคูปอง</p>';
                 }
             } catch (err) {
                 document.getElementById('couponList').innerHTML = '<p class="text-red-500 text-xs">ไม่สามารถโหลดคูปองได้</p>';
