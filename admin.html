@@ -3,183 +3,264 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ระบบหลังร้าน - สวนราชินี กำแพงเพชร</title>
+    <title>ระบบหลังร้าน สวนราชินี</title>
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;700&display=swap" rel="stylesheet">
     <style>
         body { font-family: 'Sarabun', sans-serif; }
     </style>
 </head>
-<body class="bg-gray-50 p-4 sm:p-8">
-    <div class="max-w-3xl mx-auto bg-white shadow-lg rounded-2xl p-6 space-y-6">
-        <div class="flex justify-between items-center">
+<body class="bg-gray-50 pb-24">
+    <!-- Header -->
+    <header class="bg-emerald-800 text-white p-4 shadow-md sticky top-0 z-50">
+        <div class="max-w-4xl mx-auto flex justify-between items-center">
             <div>
-                <h1 class="text-xl font-bold text-amber-800">🔒 ระบบหลังร้าน สวนราชินี</h1>
-                <p class="text-xs text-gray-500">เพิ่ม/ลบสินค้าและซิงค์ข้อมูลขึ้น GitHub อัตโนมัติ</p>
+                <h1 class="text-lg font-bold">🔒 ระบบหลังร้าน สวนราชินี</h1>
+                <p class="text-xs text-emerald-200">เพิ่ม/ลบ/แก้ไขสินค้าและซิงค์ข้อมูลขึ้น GitHub อัตโนมัติ</p>
             </div>
-            <a href="index.html" class="bg-gray-100 hover:bg-gray-200 text-gray-700 text-xs px-3 py-1.5 rounded-lg font-medium transition-colors">🏠 ไปหน้าร้าน</a>
-        </div>
-
-        <!-- Form เพิ่มสินค้า -->
-        <div class="bg-amber-50 border border-amber-200 rounded-xl p-4 space-y-3">
-            <h2 class="text-sm font-bold text-amber-900">➕ เพิ่มสินค้าใหม่</h2>
             <div>
-                <label class="block text-xs font-medium text-gray-700 mb-1">ชื่อสินค้า</label>
-                <input type="text" id="prodName" class="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500 bg-white" placeholder="เช่น ฟีโรโมนล่อชันโรง">
-            </div>
-            <div class="grid grid-cols-2 gap-3">
-                <div>
-                    <label class="block text-xs font-medium text-gray-700 mb-1">ราคา (บาท)</label>
-                    <input type="number" id="prodPrice" class="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500 bg-white" placeholder="เช่น 250">
-                </div>
-                <div>
-                    <label class="block text-xs font-medium text-gray-700 mb-1">ลิงก์รูปภาพ (URL)</label>
-                    <input type="text" id="prodImg" class="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500 bg-white" placeholder="https://...">
-                </div>
-            </div>
-            <div class="flex items-center gap-3 pt-1">
-                <button onclick="addProduct()" class="bg-amber-700 hover:bg-amber-800 text-white text-xs px-5 py-2 rounded-lg font-medium transition-colors shadow cursor-pointer">💾 บันทึกสินค้า</button>
-                <span id="statusMsg" class="text-xs font-medium"></span>
+                <a href="index.html" class="bg-emerald-700 hover:bg-emerald-600 text-white text-xs px-3 py-1.5 rounded-lg font-medium transition-colors shadow">🏠 ไปหน้าร้าน</a>
             </div>
         </div>
+    </header>
 
-        <!-- รายการสินค้า -->
-        <div>
-            <h2 class="text-sm font-bold text-gray-800 mb-2">📦 รายการสินค้าทั้งหมด</h2>
+    <main class="max-w-4xl mx-auto p-4 space-y-6">
+        <!-- GitHub Config Box -->
+        <div class="bg-white border border-gray-200 rounded-2xl p-4 shadow-xs space-y-3">
+            <h3 class="text-xs font-bold text-gray-700">⚙️ ตั้งค่าการเชื่อมต่อ GitHub (สำหรับบันทึกข้อมูลถาวร)</h3>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                    <label class="block text-[11px] font-medium text-gray-600 mb-1">GitHub Token (Personal Access Token)</label>
+                    <input type="password" id="ghToken" placeholder="ghp_xxxxxxxxxxxx" class="w-full border border-gray-300 rounded-lg px-3 py-1.5 text-xs focus:ring-2 focus:ring-emerald-500 outline-none">
+                </div>
+                <div>
+                    <label class="block text-[11px] font-medium text-gray-600 mb-1">ชื่อผู้ใช้ GitHub (Username)</label>
+                    <input type="text" id="ghUser" placeholder="เช่น username" class="w-full border border-gray-300 rounded-lg px-3 py-1.5 text-xs focus:ring-2 focus:ring-emerald-500 outline-none">
+                </div>
+                <div>
+                    <label class="block text-[11px] font-medium text-gray-600 mb-1">ชื่อ Repository</label>
+                    <input type="text" id="ghRepo" placeholder="เช่น my-shop" class="w-full border border-gray-300 rounded-lg px-3 py-1.5 text-xs focus:ring-2 focus:ring-emerald-500 outline-none">
+                </div>
+                <div class="flex items-end">
+                    <button onclick="saveGitHubConfig()" class="w-full bg-gray-700 hover:bg-gray-800 text-white text-xs py-2 rounded-lg font-medium transition-colors shadow">💾 บันทึกค่าตั้งค่า GitHub</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Add/Edit Product Form -->
+        <div class="bg-amber-50/60 border border-amber-200 rounded-2xl p-4 sm:p-6 shadow-xs space-y-4">
+            <h3 id="formTitle" class="text-sm font-bold text-amber-900">➕ เพิ่มสินค้าใหม่</h3>
+            <input type="hidden" id="editIndex" value="">
+            
+            <div class="space-y-3">
+                <div>
+                    <label class="block text-xs font-medium text-gray-700 mb-1">ชื่อสินค้า</label>
+                    <input type="text" id="prodName" placeholder="เช่น ฟีโรโมนล่อชันโรง" class="w-full border border-gray-300 bg-white rounded-xl px-3 py-2 text-xs focus:ring-2 focus:ring-amber-500 outline-none">
+                </div>
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                    <div>
+                        <label class="block text-xs font-medium text-gray-700 mb-1">ราคา (บาท)</label>
+                        <input type="number" id="prodPrice" placeholder="เช่น 250" class="w-full border border-gray-300 bg-white rounded-xl px-3 py-2 text-xs focus:ring-2 focus:ring-amber-500 outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-medium text-gray-700 mb-1">ค่าขนส่ง (บาท)</label>
+                        <input type="number" id="prodShipping" placeholder="เช่น 20 หรือ 0" class="w-full border border-gray-300 bg-white rounded-xl px-3 py-2 text-xs focus:ring-2 focus:ring-amber-500 outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-medium text-gray-700 mb-1">ลิงก์รูปภาพ (URL)</label>
+                        <input type="text" id="prodImage" placeholder="https://..." class="w-full border border-gray-300 bg-white rounded-xl px-3 py-2 text-xs focus:ring-2 focus:ring-amber-500 outline-none">
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex gap-2 pt-2">
+                <button onclick="saveProduct()" id="saveBtn" class="bg-amber-600 hover:bg-amber-700 text-white text-xs px-5 py-2 rounded-xl font-bold transition-colors shadow cursor-pointer">💾 บันทึกสินค้า</button>
+                <button onclick="resetForm()" id="cancelBtn" class="hidden bg-gray-300 hover:bg-gray-400 text-gray-700 text-xs px-4 py-2 rounded-xl font-medium transition-colors">ยกเลิกแก้ไข</button>
+            </div>
+        </div>
+
+        <!-- Product List Section -->
+        <div class="space-y-3">
+            <h3 class="text-sm font-bold text-gray-700">📦 รายการสินค้าทั้งหมดในระบบ</h3>
             <div id="adminProductList" class="space-y-2">
-                <p class="text-gray-400 text-xs">กำลังโหลด...</p>
+                <p class="text-gray-400 text-xs">กำลังโหลดข้อมูล...</p>
             </div>
         </div>
-    </div>
+    </main>
 
     <script>
-        const GITHUB_TOKEN = "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";
-        const REPO_OWNER = "aromdee2012-lgtm";
-        const REPO_NAME = "suan-rachinee";
+        let products = [];
 
-        async function fetchGitHubFile(filePath) {
-            const url = `https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${filePath}?t=${Date.now()}`;
+        // โหลดค่าตั้งค่า GitHub จาก LocalStorage ตอนเปิดหน้าเว็บ
+        window.addEventListener('DOMContentLoaded', () => {
+            document.getElementById('ghToken').value = localStorage.getItem('gh_token') || '';
+            document.getElementById('ghUser').value = localStorage.getItem('gh_user') || '';
+            document.getElementById('ghRepo').value = localStorage.getItem('gh_repo') || '';
+            loadProducts();
+        });
+
+        function saveGitHubConfig() {
+            localStorage.setItem('gh_token', document.getElementById('ghToken').value.trim());
+            localStorage.setItem('gh_user', document.getElementById('ghUser').value.trim());
+            localStorage.setItem('gh_repo', document.getElementById('ghRepo').value.trim());
+            alert('บันทึกค่าตั้งค่า GitHub เรียบร้อยแล้ว!');
+        }
+
+        async function loadProducts() {
             try {
-                const res = await fetch(url, { cache: "no-store" });
+                const res = await fetch(`products.json?t=${Date.now()}`, { cache: "no-store" });
                 if (res.ok) {
-                    const data = await res.json();
-                    const content = JSON.parse(decodeURIComponent(escape(atob(data.content))));
-                    return { content, sha: data.sha };
+                    products = await res.json();
+                } else {
+                    products = [];
                 }
-            } catch (err) {}
-            return { content: [], sha: null };
+            } catch (err) {
+                products = [];
+            }
+            renderAdminProducts();
         }
 
-        async function saveJSONToGitHub(filePath, dataObj, currentSha) {
-            const url = `https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${filePath}`;
-            const jsonString = JSON.stringify(dataObj, null, 2);
-            const contentBase64 = btoa(unescape(encodeURIComponent(jsonString)));
-
-            const bodyData = {
-                message: `Update ${filePath} via Clean Admin`,
-                content: contentBase64
-            };
-            if (currentSha) bodyData.sha = currentSha;
-
-            try {
-                const res = await fetch(url, {
-                    method: 'PUT',
-                    headers: {
-                        'Authorization': `token ${GITHUB_TOKEN}`,
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify(bodyData)
-                });
-                if (res.ok) {
-                    const resData = await res.json();
-                    return resData.content.sha;
-                }
-            } catch (err) {}
-            return null;
-        }
-
-        let currentSha = null;
-
-        async function loadAdminProducts() {
-            const result = await fetchGitHubFile('products.json');
-            currentSha = result.sha;
-            renderAdminProducts(result.content);
-        }
-
-        function renderAdminProducts(products) {
+        function renderAdminProducts() {
             const listDiv = document.getElementById('adminProductList');
             if (!products || products.length === 0) {
-                listDiv.innerHTML = '<p class="text-gray-400 text-xs">ยังไม่มีสินค้า</p>';
+                listDiv.innerHTML = '<p class="text-gray-400 text-xs bg-white p-4 rounded-xl border border-gray-200">ยังไม่มีสินค้าในระบบ</p>';
                 return;
             }
+
             listDiv.innerHTML = products.map((p, index) => `
-                <div class="flex items-center justify-between border border-gray-200 p-2.5 rounded-xl bg-white shadow-xs">
+                <div class="bg-white border border-gray-200 p-3 rounded-xl flex items-center justify-between shadow-xs">
                     <div class="flex items-center space-x-3">
-                        <img src="${p.image}" class="w-10 h-10 object-cover rounded-lg border" onerror="this.src='https://placehold.co/100?text=No+Image'">
+                        <img src="${p.image}" alt="${p.name}" class="w-12 h-12 object-cover rounded-lg bg-gray-100" onerror="this.src='https://placehold.co/100?text=No+Image'">
                         <div>
                             <h4 class="text-xs font-bold text-gray-800">${p.name}</h4>
-                            <p class="text-xs text-amber-700 font-semibold">${p.price} บาท</p>
+                            <p class="text-xs text-amber-700 font-semibold">ราคา: ${p.price} บาท | ค่าส่ง: ${p.shipping || 0} บาท</p>
                         </div>
                     </div>
-                    <button onclick="deleteProduct(${index})" class="text-red-500 hover:text-red-700 text-xs px-2.5 py-1 bg-red-50 rounded-lg font-medium cursor-pointer">🗑️ ลบ</button>
+                    <div class="flex space-x-1.5">
+                        <button onclick="editProduct(${index})" class="bg-blue-600 hover:bg-blue-700 text-white text-xs px-3 py-1.5 rounded-lg font-medium transition-colors cursor-pointer">✏️ แก้ไข</button>
+                        <button onclick="deleteProduct(${index})" class="bg-red-500 hover:bg-red-600 text-white text-xs px-3 py-1.5 rounded-lg font-medium transition-colors cursor-pointer">🗑️ ลบ</button>
+                    </div>
                 </div>
             `).join('');
         }
 
-        async function addProduct() {
-            const name = document.getElementById('prodName').value.trim();
-            const price = document.getElementById('prodPrice').value.trim();
-            const image = document.getElementById('prodImg').value.trim();
-            const statusMsg = document.getElementById('statusMsg');
+        function editProduct(index) {
+            const p = products[index];
+            document.getElementById('editIndex').value = index;
+            document.getElementById('prodName').value = p.name;
+            document.getElementById('prodPrice').value = p.price;
+            document.getElementById('prodShipping').value = p.shipping || 0;
+            document.getElementById('prodImage').value = p.image;
 
-            if (!name || !price || !image) {
-                alert('กรุณากรอกข้อมูลให้ครบถ้วนครับ');
+            document.getElementById('formTitle').innerText = '✏️ แก้ไขสินค้า';
+            document.getElementById('saveBtn').innerText = '💾 บันทึกการแก้ไข';
+            document.getElementById('cancelBtn').classList.remove('hidden');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function resetForm() {
+            document.getElementById('editIndex').value = '';
+            document.getElementById('prodName').value = '';
+            document.getElementById('prodPrice').value = '';
+            document.getElementById('prodShipping').value = '';
+            document.getElementById('prodImage').value = '';
+
+            document.getElementById('formTitle').innerText = '➕ เพิ่มสินค้าใหม่';
+            document.getElementById('saveBtn').innerText = '💾 บันทึกสินค้า';
+            document.getElementById('cancelBtn').classList.add('hidden');
+        }
+
+        async function saveProduct() {
+            const name = document.getElementById('prodName').value.trim();
+            const price = parseFloat(document.getElementById('prodPrice').value);
+            const shipping = parseFloat(document.getElementById('prodShipping').value) || 0;
+            const image = document.getElementById('prodImage').value.trim();
+            const editIndex = document.getElementById('editIndex').value;
+
+            if (!name || isNaN(price)) {
+                alert('กรุณากรอกชื่อสินค้าและราคาให้ถูกต้อง');
                 return;
             }
 
-            statusMsg.textContent = "กำลังบันทึก...";
-            statusMsg.className = "text-xs font-medium text-blue-600";
+            const productData = { name, price, shipping, image: image || 'https://placehold.co/300?text=No+Image' };
 
-            // ดึงข้อมูลล่าสุดและ SHA สดๆ ก่อนเซฟ
-            const remote = await fetchGitHubFile('products.json');
-            let products = remote.content;
-            currentSha = remote.sha;
-
-            products.push({ id: Date.now(), name, price: Number(price), image });
-
-            const newSha = await saveJSONToGitHub('products.json', products, currentSha);
-            if (newSha) {
-                currentSha = newSha;
-                statusMsg.textContent = "✅ บันทึกสำเร็จ!";
-                statusMsg.className = "text-xs font-medium text-green-600";
-                document.getElementById('prodName').value = '';
-                document.getElementById('prodPrice').value = '';
-                document.getElementById('prodImg').value = '';
-                renderAdminProducts(products);
+            if (editIndex === '') {
+                products.push(productData);
             } else {
-                statusMsg.textContent = "❌ บันทึกไม่สำเร็จ";
-                statusMsg.className = "text-xs font-medium text-red-600";
+                products[editIndex] = productData;
             }
+
+            await syncToGitHub();
         }
 
         async function deleteProduct(index) {
-            if (!confirm('ต้องการลบสินค้านี้ใช่ไหมครับ?')) return;
-
-            const remote = await fetchGitHubFile('products.json');
-            let products = remote.content;
-            products.splice(index, 1);
-
-            const newSha = await saveJSONToGitHub('products.json', products, remote.sha);
-            if (newSha) {
-                currentSha = newSha;
-                renderAdminProducts(products);
-            } else {
-                alert('ลบไม่สำเร็จ กรุณาลองใหม่');
-                loadAdminProducts();
+            if (confirm(`คุณต้องการลบสินค้า "${products[index].name}" ใช่หรือไม่?`)) {
+                products.splice(index, 1);
+                await syncToGitHub();
             }
         }
 
-        loadAdminProducts();
+        async function syncToGitHub() {
+            const token = document.getElementById('ghToken').value.trim();
+            const user = document.getElementById('ghUser').value.trim();
+            const repo = document.getElementById('ghRepo').value.trim();
+
+            if (!token || !user || !repo) {
+                alert('กรุณากรอกข้อมูลตั้งค่า GitHub (Token, Username, Repository) ให้ครบถ้วนก่อนบันทึก!');
+                return;
+            }
+
+            const btn = document.getElementById('saveBtn');
+            const originalText = btn.innerText;
+            btn.innerText = 'กำลังซิงค์ขึ้น GitHub...';
+            btn.disabled = true;
+
+            const filePath = 'products.json';
+            const apiUrl = `https://api.github.com/repos/${user}/${repo}/contents/${filePath}`;
+            const contentEncoded = btoa(unescape(encodeURIComponent(JSON.stringify(products, null, 2))));
+
+            try {
+                // เช็ค SHA เดิมของไฟล์
+                let sha = '';
+                const getRes = await fetch(apiUrl, {
+                    headers: { 'Authorization': `token ${token}` }
+                });
+                if (getRes.ok) {
+                    const fileData = await getRes.json();
+                    sha = fileData.sha;
+                }
+
+                // ส่งข้อมูลอัปเดตขึ้น GitHub
+                const bodyData = {
+                    message: "Update products.json via admin panel",
+                    content: contentEncoded
+                };
+                if (sha) bodyData.sha = sha;
+
+                const putRes = await fetch(apiUrl, {
+                    method: 'PUT',
+                    headers: {
+                        'Authorization': `token ${token}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(bodyData)
+                });
+
+                if (putRes.ok) {
+                    alert('บันทึกและซิงค์ข้อมูลขึ้น GitHub สำเร็จเรียบร้อย!');
+                    resetForm();
+                    renderAdminProducts();
+                } else {
+                    const errJson = await putRes.json();
+                    alert('เกิดข้อผิดพลาดในการบันทึก: ' + (errJson.message || 'ไม่สามารถเชื่อมต่อ GitHub ได้'));
+                }
+            } catch (err) {
+                alert('เกิดข้อผิดพลาดระบบ: ' + err.message);
+            } finally {
+                btn.innerText = originalText;
+                btn.disabled = false;
+            }
+        }
     </script>
 </body>
 </html>
