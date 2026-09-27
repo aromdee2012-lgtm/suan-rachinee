@@ -34,7 +34,7 @@
                 <label class="block text-sm font-medium text-gray-700 mb-1">ลิงก์รูปภาพสินค้า (Image URL)</label>
                 <input type="text" id="prodImg" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:outline-none" placeholder="https://...">
             </div>
-            <button onclick="addProduct()" class="w-full sm:w-auto bg-amber-700 hover:bg-amber-800 text-white font-medium px-6 py-2.5 rounded-lg transition-colors shadow">
+            <button onclick="addProduct()" class="w-full sm:w-auto bg-amber-700 hover:bg-amber-800 text-white font-medium px-6 py-2.5 rounded-lg transition-colors shadow cursor-pointer">
                 💾 บันทึกสินค้าขึ้น GitHub
             </button>
             <span id="statusMsg" class="ml-3 text-sm font-medium text-gray-600"></span>
@@ -69,7 +69,7 @@
                     <option value="freeshipping">โค้ดส่วนลดค่าจัดส่ง (ส่งฟรี)</option>
                 </select>
             </div>
-            <button onclick="addCoupon()" class="w-full sm:w-auto bg-amber-600 hover:bg-amber-700 text-white font-medium px-6 py-2.5 rounded-lg transition-colors shadow">
+            <button onclick="addCoupon()" class="w-full sm:w-auto bg-amber-600 hover:bg-amber-700 text-white font-medium px-6 py-2.5 rounded-lg transition-colors shadow cursor-pointer">
                 💾 บันทึกคูปองขึ้น GitHub
             </button>
             <span id="couponStatusMsg" class="ml-3 text-sm font-medium text-gray-600"></span>
@@ -88,30 +88,31 @@
         const REPO_OWNER = "aromdee2012-lgtm";
         const REPO_NAME = "suan-rachinee";
 
-        // --- จัดการสินค้า ---
-        let products = [];
-        let productSha = "";
-
-        async function loadProducts() {
-            const url = `https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/products.json`;
+        // --- ฟังก์ชันดึงข้อมูลและ SHA ล่าสุดจาก GitHub ตรงๆ ---
+        async function fetchGitHubFile(filePath) {
+            const url = `https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${filePath}`;
             try {
-                const res = await fetch(url);
+                const res = await fetch(url, { cache: "no-store" }); // ป้องกันการจำค่าเก่า (Cache)
                 if (res.ok) {
                     const data = await res.json();
-                    productSha = data.sha;
-                    products = JSON.parse(decodeURIComponent(escape(atob(data.content))));
-                    renderProducts();
-                } else {
-                    document.getElementById('productList').innerHTML = '<p class="text-amber-600 text-sm">ยังไม่มีไฟล์ products.json</p>';
+                    const content = JSON.parse(decodeURIComponent(escape(atob(data.content))));
+                    return { content, sha: data.sha };
                 }
             } catch (err) {
-                document.getElementById('productList').innerHTML = '<p class="text-red-500 text-sm">ไม่สามารถโหลดข้อมูลสินค้าได้</p>';
+                console.error("Error fetching " + filePath, err);
             }
+            return { content: [], sha: null };
         }
 
-        function renderProducts() {
+        // --- ส่วนจัดการสินค้า ---
+        async function loadProducts() {
+            const { content } = await fetchGitHubFile('products.json');
+            renderProducts(content);
+        }
+
+        function renderProducts(products) {
             const listDiv = document.getElementById('productList');
-            if (products.length === 0) {
+            if (!products || products.length === 0) {
                 listDiv.innerHTML = '<p class="text-gray-500 text-sm">ยังไม่มีสินค้าในระบบ</p>';
                 return;
             }
@@ -124,7 +125,7 @@
                             <p class="text-sm text-amber-700 font-semibold">${p.price} บาท</p>
                         </div>
                     </div>
-                    <button onclick="deleteProduct(${index})" class="text-red-500 hover:text-red-700 text-sm font-medium px-3 py-1 bg-red-50 rounded-lg transition-colors">🗑️ ลบ</button>
+                    <button onclick="deleteProduct(${index})" class="text-red-500 hover:text-red-700 text-sm font-medium px-3 py-1 bg-red-50 rounded-lg transition-colors cursor-pointer">🗑️ ลบ</button>
                 </div>
             `).join('');
         }
@@ -140,10 +141,15 @@
                 return;
             }
 
-            statusMsg.textContent = "กำลังบันทึกสินค้า...";
+            statusMsg.textContent = "กำลังซิงค์และบันทึก...";
+
+            // ดึงข้อมูลล่าสุดและ SHA ล่าสุดจาก GitHub ก่อนบันทึกเสมอ ป้องกันข้อมูลชนกัน
+            const remoteData = await fetchGitHubFile('products.json');
+            let products = remoteData.content;
+
             products.push({ id: Date.now(), name, price: Number(price), image, shippingFee: 0 });
 
-            const success = await saveJSONToGitHub('products.json', products, productSha);
+            const success = await saveJSONToGitHub('products.json', products, remoteData.sha);
             if (success) {
                 statusMsg.textContent = "✅ บันทึกสินค้าสำเร็จ!";
                 statusMsg.className = "ml-3 text-sm font-medium text-green-600";
@@ -152,45 +158,38 @@
                 document.getElementById('prodImg').value = '';
                 loadProducts();
             } else {
-                statusMsg.textContent = "❌ บันทึกไม่สำเร็จ";
+                statusMsg.textContent = "❌ บันทึกไม่สำเร็จ ลองใหม่อีกครั้ง";
                 statusMsg.className = "ml-3 text-sm font-medium text-red-600";
-                products.pop();
             }
         }
 
         async function deleteProduct(index) {
             if (!confirm('ต้องการลบสินค้านี้ใช่ไหมครับ?')) return;
+
+            const remoteData = await fetchGitHubFile('products.json');
+            let products = remoteData.content;
+            
             products.splice(index, 1);
-            const success = await saveJSONToGitHub('products.json', products, productSha);
-            if (success) loadProducts();
-            else { alert('ลบไม่สำเร็จ'); loadProducts(); }
-        }
-
-
-        // --- จัดการคูปอง ---
-        let coupons = [];
-        let couponSha = "";
-
-        async function loadCoupons() {
-            const url = `https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/coupons.json`;
-            try {
-                const res = await fetch(url);
-                if (res.ok) {
-                    const data = await res.json();
-                    couponSha = data.sha;
-                    coupons = JSON.parse(decodeURIComponent(escape(atob(data.content))));
-                    renderCoupons();
-                } else {
-                    document.getElementById('couponList').innerHTML = '<p class="text-amber-600 text-sm">ยังไม่มีไฟล์ coupons.json</p>';
-                }
-            } catch (err) {
-                document.getElementById('couponList').innerHTML = '<p class="text-red-500 text-sm">ไม่สามารถโหลดข้อมูลคูปองได้</p>';
+            const success = await saveJSONToGitHub('products.json', products, remoteData.sha);
+            
+            if (success) {
+                loadProducts();
+            } else {
+                alert('ลบไม่สำเร็จ กรุณาลองใหม่อีกครั้ง');
+                loadProducts();
             }
         }
 
-        function renderCoupons() {
+
+        // --- ส่วนจัดการคูปอง ---
+        async function loadCoupons() {
+            const { content } = await fetchGitHubFile('coupons.json');
+            renderCoupons(content);
+        }
+
+        function renderCoupons(coupons) {
             const listDiv = document.getElementById('couponList');
-            if (coupons.length === 0) {
+            if (!coupons || coupons.length === 0) {
                 listDiv.innerHTML = '<p class="text-gray-500 text-sm">ยังไม่มีคูปองในระบบ</p>';
                 return;
             }
@@ -201,7 +200,7 @@
                         <h3 class="font-medium text-gray-800 mt-1">${c.name}</h3>
                         <p class="text-sm text-amber-700 font-semibold">มูลค่า: ${c.discount} บาท</p>
                     </div>
-                    <button onclick="deleteCoupon(${index})" class="text-red-500 hover:text-red-700 text-sm font-medium px-3 py-1 bg-red-50 rounded-lg transition-colors">🗑️ ลบ</button>
+                    <button onclick="deleteCoupon(${index})" class="text-red-500 hover:text-red-700 text-sm font-medium px-3 py-1 bg-red-50 rounded-lg transition-colors cursor-pointer">🗑️ ลบ</button>
                 </div>
             `).join('');
         }
@@ -217,10 +216,14 @@
                 return;
             }
 
-            statusMsg.textContent = "กำลังบันทึกคูปอง...";
+            statusMsg.textContent = "กำลังซิงค์และบันทึก...";
+
+            const remoteData = await fetchGitHubFile('coupons.json');
+            let coupons = remoteData.content;
+
             coupons.push({ id: Date.now(), name, discount: Number(discount), type });
 
-            const success = await saveJSONToGitHub('coupons.json', coupons, couponSha);
+            const success = await saveJSONToGitHub('coupons.json', coupons, remoteData.sha);
             if (success) {
                 statusMsg.textContent = "✅ บันทึกคูปองสำเร็จ!";
                 statusMsg.className = "ml-3 text-sm font-medium text-green-600";
@@ -228,18 +231,26 @@
                 document.getElementById('couponDiscount').value = '';
                 loadCoupons();
             } else {
-                statusMsg.textContent = "❌ บันทึกไม่สำเร็จ";
+                statusMsg.textContent = "❌ บันทึกไม่สำเร็จ ลองใหม่อีกครั้ง";
                 statusMsg.className = "ml-3 text-sm font-medium text-red-600";
-                coupons.pop();
             }
         }
 
         async function deleteCoupon(index) {
             if (!confirm('ต้องการลบคูปองนี้ใช่ไหมครับ?')) return;
+
+            const remoteData = await fetchGitHubFile('coupons.json');
+            let coupons = remoteData.content;
+
             coupons.splice(index, 1);
-            const success = await saveJSONToGitHub('coupons.json', coupons, couponSha);
-            if (success) loadCoupons();
-            else { alert('ลบไม่สำเร็จ'); loadCoupons(); }
+            const success = await saveJSONToGitHub('coupons.json', coupons, remoteData.sha);
+            
+            if (success) {
+                loadCoupons();
+            } else {
+                alert('ลบไม่สำเร็จ กรุณาลองใหม่อีกครั้ง');
+                loadCoupons();
+            }
         }
 
 
@@ -267,19 +278,13 @@
                     body: JSON.stringify(bodyData)
                 });
 
-                if (res.ok) {
-                    const data = await res.json();
-                    if (filePath === 'products.json') productSha = data.content.sha;
-                    if (filePath === 'coupons.json') couponSha = data.content.sha;
-                    return true;
-                }
-                return false;
+                return res.ok;
             } catch (err) {
                 return false;
             }
         }
 
-        // โหลดข้อมูลทั้งหมดเมื่อเปิดหน้าเว็บ
+        // โหลดข้อมูลเมื่อเปิดหน้าเว็บ
         loadProducts();
         loadCoupons();
     </script>
